@@ -3,6 +3,7 @@
 ### 🚀 Features
 
 - Scaffold Bigtable table module replacing GCS bucket template
+- Update change stream retention configuration to use variable
 
 ### 🐛 Bug Fixes
 
@@ -11,3 +12,8 @@
 ### 📚 Documentation
 
 - Update CHANGELOG.md [skip ci]
+- Update CHANGELOG.md [skip ci]
+
+### 🎨 Styling
+
+- Format tables in README.md for better readability
