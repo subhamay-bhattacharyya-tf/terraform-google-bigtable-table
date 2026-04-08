@@ -32,11 +32,17 @@ func TestBigtableTableChangeStream(t *testing.T) {
 		},
 	}
 
-	defer terraform.Destroy(t, tfOptions)
+	// Destroy must happen after disabling the change stream; see cleanup below.
 	terraform.InitAndApply(t, tfOptions)
 
 	time.Sleep(retrySleep)
 
 	outputName := terraform.Output(t, tfOptions, "table_name")
 	require.Contains(t, outputName, baseName)
+
+	// GCP refuses to delete a table with an active change stream.
+	// Disable it first by re-applying with change_stream_retention unset, then destroy.
+	tfOptions.Vars["change_stream_retention"] = ""
+	terraform.Apply(t, tfOptions)
+	terraform.Destroy(t, tfOptions)
 }

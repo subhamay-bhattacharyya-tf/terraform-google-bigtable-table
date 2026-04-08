@@ -22,7 +22,7 @@ module "bigtable_table" {
     base_name               = var.base_name
     instance_name           = google_bigtable_instance.this.name
     deletion_protection     = "UNPROTECTED"
-    change_stream_retention = "24h0m0s"
+    change_stream_retention = var.change_stream_retention != "" ? var.change_stream_retention : null
     column_family = [
       { family = "cf1" }
     ]
