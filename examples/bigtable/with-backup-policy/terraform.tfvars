@@ -1,0 +1,5 @@
+environment   = "devl"
+project_code  = "demo"
+region        = "us-central1"
+base_name     = "backup-table"
+instance_name = "demo-bigtable-instance"

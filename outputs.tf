@@ -1,43 +1,33 @@
 # ============================================================================
-# GCS Bucket Module - Outputs
+# Bigtable Table Module - Outputs
 # ============================================================================
 
-output "bucket_id" {
-  description = "The ID of the GCS bucket."
-  value       = google_storage_bucket.this.id
+output "table_id" {
+  description = "The ID of the Bigtable table."
+  value       = google_bigtable_table.this.id
 }
 
-output "bucket_name" {
-  description = "The name of the GCS bucket."
-  value       = google_storage_bucket.this.name
+output "table_name" {
+  description = "The name of the Bigtable table."
+  value       = google_bigtable_table.this.name
 }
 
-output "bucket_project" {
-  description = "The project ID where the bucket is created."
-  value       = google_storage_bucket.this.project
+output "table_project" {
+  description = "The project in which the Bigtable table was created."
+  value       = google_bigtable_table.this.project
 }
 
-output "bucket_location" {
-  description = "The location of the GCS bucket."
-  value       = google_storage_bucket.this.location
+output "table_instance_name" {
+  description = "The name of the Bigtable instance the table belongs to."
+  value       = google_bigtable_table.this.instance_name
 }
 
-output "bucket_url" {
-  description = "The URL of the GCS bucket."
-  value       = google_storage_bucket.this.url
+output "table_column_families" {
+  description = "The column families configured on the Bigtable table."
+  value       = google_bigtable_table.this.column_family
 }
 
-output "bucket_self_link" {
-  description = "The self link of the GCS bucket resource."
-  value       = google_storage_bucket.this.self_link
-}
-
-output "bucket_storage_class" {
-  description = "The storage class of the GCS bucket."
-  value       = google_storage_bucket.this.storage_class
-}
-
-output "bucket_force_destroy" {
-  description = "Whether force_destroy is enabled for the GCS bucket."
-  value       = google_storage_bucket.this.force_destroy
+output "table_deletion_protection" {
+  description = "The deletion protection setting of the Bigtable table."
+  value       = google_bigtable_table.this.deletion_protection
 }

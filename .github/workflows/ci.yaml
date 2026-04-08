@@ -69,7 +69,14 @@ jobs:
     strategy:
       matrix:
         example:
-          - examples/bucket/basic
+          - examples/bigtable/basic
+          - examples/bigtable/with-column-family
+          - examples/bigtable/with-multiple-column-families
+          - examples/bigtable/with-split-keys
+          - examples/bigtable/with-change-stream
+          - examples/bigtable/with-backup-policy
+          - examples/bigtable/unprotected
+          - examples/bigtable/complete
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -129,13 +136,61 @@ jobs:
           go mod download
         working-directory: test
 
-      - name: Run Terratest - GCS Bucket Basic
-        id: gcs-bucket-basic-test
+      - name: Run Terratest - Bigtable Table Basic
+        id: bigtable-table-basic-test
         run: |
           set -o pipefail
-          go test -v -timeout 30m -run TestGCSBucketBasic \
-            ./gcs_bucket_basic_test.go ./helpers_test.go 2>&1 | tee test_output.txt
-          echo "## GCS Bucket Basic Test Results" >> $GITHUB_STEP_SUMMARY
+          go test -v -timeout 30m -run TestBigtableTableBasic \
+            ./bigtable_table_basic_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## Bigtable Table Basic Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        working-directory: test
+
+      - name: Run Terratest - Bigtable Table Column Family
+        id: bigtable-table-column-family-test
+        run: |
+          set -o pipefail
+          go test -v -timeout 30m -run TestBigtableTableColumnFamily \
+            ./bigtable_table_column_family_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## Bigtable Table Column Family Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        working-directory: test
+
+      - name: Run Terratest - Bigtable Table Split Keys
+        id: bigtable-table-split-keys-test
+        run: |
+          set -o pipefail
+          go test -v -timeout 30m -run TestBigtableTableSplitKeys \
+            ./bigtable_table_split_keys_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## Bigtable Table Split Keys Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        working-directory: test
+
+      - name: Run Terratest - Bigtable Table Change Stream
+        id: bigtable-table-change-stream-test
+        run: |
+          set -o pipefail
+          go test -v -timeout 30m -run TestBigtableTableChangeStream \
+            ./bigtable_table_change_stream_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## Bigtable Table Change Stream Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        working-directory: test
+
+      - name: Run Terratest - Bigtable Table Backup Policy
+        id: bigtable-table-backup-policy-test
+        run: |
+          set -o pipefail
+          go test -v -timeout 30m -run TestBigtableTableBackupPolicy \
+            ./bigtable_table_backup_policy_test.go ./helpers_test.go 2>&1 | tee test_output.txt
+          echo "## Bigtable Table Backup Policy Test Results" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat test_output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -208,4 +263,4 @@ jobs:
             @semantic-release/git@10.0.1
             conventional-changelog-conventionalcommits@9.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

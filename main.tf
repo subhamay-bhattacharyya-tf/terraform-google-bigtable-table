@@ -1,23 +1,28 @@
 # ============================================================================
-# GCS Bucket Module - Main
-# Creates and manages a Google Cloud Storage bucket.
+# Bigtable Table Module - Main
+# Creates and manages a Google Cloud Bigtable table.
 # ============================================================================
 
-resource "google_storage_bucket" "this" {
-  name                        = var.bucket_name
-  project                     = var.project_id
-  location                    = var.location
-  storage_class               = upper(var.storage_class)
-  force_destroy               = var.force_destroy
-  uniform_bucket_level_access = true
-  public_access_prevention    = "enforced"
+resource "google_bigtable_table" "this" {
+  name          = local.bigtable_table_config.table_name
+  instance_name = local.bigtable_table_config.instance_name
 
-  labels = merge(var.labels, {
-    project     = var.project
-    environment = var.environment
-  })
+  dynamic "column_family" {
+    for_each = local.bigtable_table_config.column_family
+    content {
+      family = column_family.value.family
+    }
+  }
 
-  versioning {
-    enabled = var.versioning
+  split_keys              = length(local.bigtable_table_config.split_keys) > 0 ? local.bigtable_table_config.split_keys : null
+  deletion_protection     = local.bigtable_table_config.deletion_protection
+  change_stream_retention = local.bigtable_table_config.change_stream_retention
+
+  dynamic "automated_backup_policy" {
+    for_each = local.bigtable_table_config.automated_backup_policy != null ? [local.bigtable_table_config.automated_backup_policy] : []
+    content {
+      retention_period = automated_backup_policy.value.retention_period
+      frequency        = automated_backup_policy.value.frequency
+    }
   }
 }

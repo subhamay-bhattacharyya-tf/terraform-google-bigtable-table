@@ -1,16 +1,25 @@
 # ============================================================================
-# GCS Bucket - Variables
+# Bigtable Table Module - Variables
 # ============================================================================
 
-variable "bucket_name" {
-  description = "Name of the GCS bucket."
+variable "environment" {
+  description = "Deployment environment (dev, test, prod)."
   type        = string
+
+  validation {
+    condition     = contains(["devl", "test", "prod"], var.environment)
+    error_message = "environment must be one of: devl, test, prod."
+  }
 }
 
-variable "project_id" {
-  description = "GCP project ID."
+variable "project_code" {
+  description = "Short project identifier used in resource naming."
   type        = string
-  default     = "portfolio-site"
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{1,19}$", var.project_code))
+    error_message = "project_code must start with a lowercase letter, contain only lowercase alphanumeric characters or dashes, and be 2-20 characters long."
+  }
 }
 
 variable "region" {
@@ -19,44 +28,41 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "location" {
-  description = "GCS bucket location."
-  type        = string
-  default     = "US"
-}
+variable "bigtable_table_config" {
+  description = "Configuration for the Bigtable table resource."
+  type = object({
+    base_name               = string
+    instance_name           = string
+    split_keys              = optional(list(string), [])
+    column_family           = optional(list(object({ family = string })), [])
+    deletion_protection     = optional(string, "PROTECTED")
+    change_stream_retention = optional(string, null)
+    automated_backup_policy = optional(object({
+      retention_period = string
+      frequency        = string
+    }), null)
+  })
 
-variable "storage_class" {
-  description = "Storage class for the bucket."
-  type        = string
-  default     = "STANDARD"
-}
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]{1,30}$", var.bigtable_table_config.base_name))
+    error_message = "base_name must be alphanumeric or dashes and at most 30 characters."
+  }
 
-variable "force_destroy" {
-  description = "Whether to force-destroy the bucket on Terraform destroy."
-  type        = bool
-  default     = false
-}
+  validation {
+    condition     = length(var.bigtable_table_config.instance_name) > 0
+    error_message = "instance_name must not be empty."
+  }
 
-variable "versioning" {
-  description = "Whether to enable object versioning."
-  type        = bool
-  default     = false
-}
+  validation {
+    condition     = contains(["PROTECTED", "UNPROTECTED"], var.bigtable_table_config.deletion_protection)
+    error_message = "deletion_protection must be one of: PROTECTED, UNPROTECTED."
+  }
 
-variable "labels" {
-  description = "Additional labels to apply to the bucket."
-  type        = map(string)
-  default     = {}
-}
-
-variable "project" {
-  description = "Project label value."
-  type        = string
-  default     = "portfolio-site"
-}
-
-variable "environment" {
-  description = "Environment label value."
-  type        = string
-  default     = "dev"
+  validation {
+    condition = alltrue([
+      for cf in var.bigtable_table_config.column_family :
+      length(cf.family) > 0
+    ])
+    error_message = "Each column_family must have a non-empty family name."
+  }
 }

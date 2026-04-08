@@ -11,22 +11,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestGCSBucketBasic tests creating a basic GCS bucket.
-func TestGCSBucketBasic(t *testing.T) {
+// TestBigtableTableBasic tests creating a basic Bigtable table with minimal configuration.
+func TestBigtableTableBasic(t *testing.T) {
 	t.Parallel()
 
 	retrySleep := 5 * time.Second
 	unique := strings.ToLower(random.UniqueId())
-	bucketName := fmt.Sprintf("tt-gcs-basic-%s", unique)
+	baseName := fmt.Sprintf("tt-basic-%s", unique)
 	projectID := mustEnv(t, "GOOGLE_CLOUD_PROJECT")
 
 	tfOptions := &terraform.Options{
-		TerraformDir: "..",
+		TerraformDir: "../examples/bigtable/basic",
 		NoColor:      true,
 		Vars: map[string]interface{}{
-			"bucket_name": bucketName,
-			"project_id":  projectID,
-			"location":    "US",
+			"environment":   "devl",
+			"project_code":  "test",
+			"base_name":     baseName,
+			"instance_name": fmt.Sprintf("tt-instance-%s", unique),
 		},
 	}
 
@@ -35,9 +36,7 @@ func TestGCSBucketBasic(t *testing.T) {
 
 	time.Sleep(retrySleep)
 
-	outputBucketName := terraform.Output(t, tfOptions, "bucket_name")
-	require.Equal(t, bucketName, outputBucketName)
-
-	outputProject := terraform.Output(t, tfOptions, "bucket_project")
-	require.Equal(t, projectID, outputProject)
+	_ = projectID
+	outputName := terraform.Output(t, tfOptions, "table_name")
+	require.Contains(t, outputName, baseName)
 }
