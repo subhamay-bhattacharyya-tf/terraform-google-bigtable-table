@@ -18,6 +18,7 @@ func TestBigtableTableColumnFamily(t *testing.T) {
 	retrySleep := 5 * time.Second
 	unique := strings.ToLower(random.UniqueId())
 	baseName := fmt.Sprintf("tt-cf-%s", unique)
+	projectID := mustEnv(t, "GOOGLE_CLOUD_PROJECT")
 
 	tfOptions := &terraform.Options{
 		TerraformDir: "../examples/bigtable/with-column-family",
@@ -27,6 +28,7 @@ func TestBigtableTableColumnFamily(t *testing.T) {
 			"project_code":  "test",
 			"base_name":     baseName,
 			"instance_name": fmt.Sprintf("tt-instance-%s", unique),
+			"project_id":    projectID,
 		},
 	}
 

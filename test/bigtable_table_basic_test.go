@@ -28,6 +28,7 @@ func TestBigtableTableBasic(t *testing.T) {
 			"project_code":  "test",
 			"base_name":     baseName,
 			"instance_name": fmt.Sprintf("tt-instance-%s", unique),
+			"project_id":    projectID,
 		},
 	}
 
@@ -36,7 +37,6 @@ func TestBigtableTableBasic(t *testing.T) {
 
 	time.Sleep(retrySleep)
 
-	_ = projectID
 	outputName := terraform.Output(t, tfOptions, "table_name")
 	require.Contains(t, outputName, baseName)
 }

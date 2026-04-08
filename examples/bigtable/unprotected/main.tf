@@ -1,3 +1,16 @@
+resource "google_bigtable_instance" "this" {
+  name                = var.instance_name
+  project             = var.project_id
+  deletion_protection = false
+
+  cluster {
+    cluster_id   = "${var.instance_name}-cluster"
+    zone         = var.zone
+    num_nodes    = 1
+    storage_type = "HDD"
+  }
+}
+
 module "bigtable_table" {
   source = "../../../"
 
@@ -7,7 +20,7 @@ module "bigtable_table" {
 
   bigtable_table_config = {
     base_name           = var.base_name
-    instance_name       = var.instance_name
+    instance_name       = google_bigtable_instance.this.name
     deletion_protection = "UNPROTECTED"
   }
 }
