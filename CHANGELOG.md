@@ -8,9 +8,11 @@
 ### 🐛 Bug Fixes
 
 - Add Bigtable instance to examples so Terratest can create tables
+- Update change stream retention configuration to remove conditional assignment
 
 ### 📚 Documentation
 
+- Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 - Update CHANGELOG.md [skip ci]
 
